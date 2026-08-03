@@ -10,8 +10,6 @@ applications:
         - zip
         - curl
         - gd
-        - exif
-        - pcntl
         - bcmath
     build:
       flavor: composer
