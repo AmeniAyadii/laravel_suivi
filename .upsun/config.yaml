@@ -28,7 +28,7 @@ applications:
         APP_NAME: "Laravel"
         APP_ENV: "production"
         APP_DEBUG: "false"
-        APP_KEY: "base64:xMovDE+y5MQC53xmC0DfsQWLTaF+qxWR7W1dwU0rZH8="
+        APP_KEY: "base64:xANRF9dudDPe9vYzsH+b/xuNrXEg23D8FVAxAbzGdoQ="
         APP_URL: "https://{default}"
         DB_CONNECTION: "mysql"
         DB_HOST: "database.internal"
@@ -58,12 +58,7 @@ applications:
 
 services:
   database:
-    type: "mysql:8.0"
-    configuration:
-      properties:
-        character_set: "utf8mb4"
-        collation: "utf8mb4_unicode_ci"
-    
+    type: mysql:8.0
 
 routes:
   "https://{default}/":
