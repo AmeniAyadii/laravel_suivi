@@ -1,5 +1,0 @@
-# .upsun/services.yaml
-services:
-  database:
-    type: mysql:8.0
-    disk: 2048
