@@ -58,7 +58,11 @@ applications:
 
 services:
   database:
-    type: mysql:8.0
+    type: "mysql:8.0"
+    configuration:
+      properties:
+        character_set: "utf8mb4"
+        collation: "utf8mb4_unicode_ci"
     
 
 routes:
