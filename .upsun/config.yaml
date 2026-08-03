@@ -49,10 +49,6 @@ applications:
         FILESYSTEM_DISK: "local"
         CACHE_DRIVER: "file"
 
-services:
-  database:
-    type: mysql:8.0
-
 routes:
   "https://{default}/":
     type: upstream
