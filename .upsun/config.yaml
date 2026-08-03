@@ -45,7 +45,7 @@ applications:
 
 services:
   database:
-    type: mysql:8.0
+    type: "mysql:8.0"
     
 
 routes:
