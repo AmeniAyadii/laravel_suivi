@@ -30,10 +30,13 @@ RUN apt-get update && apt-get install -y \
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 🔥 COPIER TOUT LE CODE D'ABORD
+# Copier tout le code
 COPY . .
 
-# Installer les dépendances (avec artisan présent)
+# 🔥 CRÉER LE FICHIER .env AVANT LA GÉNÉRATION DE LA CLÉ
+RUN if [ ! -f .env ]; then cp .env.example .env || echo "APP_ENV=production" > .env; fi
+
+# Installer les dépendances
 RUN composer install --no-dev --optimize-autoloader
 
 # Générer la clé
