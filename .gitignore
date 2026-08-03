@@ -1,0 +1,20 @@
+# laravel_suivi/.gitignore
+
+/vendor/
+.env
+.env.*.local
+.env.production
+storage/*.log
+storage/framework/
+storage/app/
+node_modules/
+.DS_Store
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.idea/
+.vscode/
+*.sqlite
+*.sqlite3
