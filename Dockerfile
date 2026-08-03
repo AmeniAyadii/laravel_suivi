@@ -1,5 +1,5 @@
 # Laravel Dockerfile pour Render
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 WORKDIR /app
 
@@ -7,12 +7,25 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    zip \
+    unzip \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    libzip-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -20,17 +33,21 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copier les fichiers de dépendances
 COPY composer.json composer.lock ./
 
-# Installer les dépendances PHP
+# Installer les dépendances
 RUN composer install --no-dev --optimize-autoloader
 
 # Copier le reste du code
 COPY . .
 
-# Générer la clé de l'application
+# Générer la clé
 RUN php artisan key:generate
 
 # Permissions
 RUN chmod -R 777 storage bootstrap/cache
+
+# Variables d'environnement
+ENV APP_ENV=production
+ENV APP_DEBUG=false
 
 EXPOSE 10000
 
