@@ -1,31 +1,13 @@
-name: laravel
+name: meditrack-laravel
 type: php:8.2
-
 build:
   flavor: composer
-
 web:
   locations:
     "/":
       root: "public"
       passthru: "/index.php"
-      index:
-        - index.php
-
-disk: 2048
-
 hooks:
   build: |
-    set -e
-    composer install --no-dev --no-interaction --optimize-autoloader
-    php artisan optimize
-  deploy: |
-    set -e
-    php artisan migrate --force
-
-relationships:
-  database: "database:mysql"
-
-services:
-  database:
-    type: mysql:8.0
+    composer install --no-dev --optimize-autoloader
+disk: 2048
