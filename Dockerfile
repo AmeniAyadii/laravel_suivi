@@ -30,14 +30,11 @@ RUN apt-get update && apt-get install -y \
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier les fichiers de dépendances
-COPY composer.json composer.lock ./
-
-# Installer les dépendances
-RUN composer install --no-dev --optimize-autoloader
-
-# Copier le reste du code
+# 🔥 COPIER TOUT LE CODE D'ABORD
 COPY . .
+
+# Installer les dépendances (avec artisan présent)
+RUN composer install --no-dev --optimize-autoloader
 
 # Générer la clé
 RUN php artisan key:generate
