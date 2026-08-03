@@ -1,5 +1,0 @@
-# .platform/services.yaml
-
-db:
-  type: postgresql:16
-  disk: 256
