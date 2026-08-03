@@ -18,6 +18,14 @@ applications:
         "/":
           root: "public"
           passthru: "/index.php"
+    mounts:
+      "storage":
+        source: "local"
+        source_path: "storage"
+      "bootstrap/cache":
+        source: "local"
+        source_path: "bootstrap-cache"
+
     hooks:
       build: |
         composer install --no-dev --optimize-autoloader
