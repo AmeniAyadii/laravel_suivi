@@ -1,0 +1,29 @@
+name: meditrack-laravel
+type: php:8.4
+build:
+  flavor: composer
+web:
+  locations:
+    "/":
+      root: public
+      passthru: /index.php
+      expires: 1h
+      allow: true
+hooks:
+  build: |
+    composer install --no-dev --optimize-autoloader
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+  deploy: |
+    php artisan migrate --force
+relationships:
+  database: db:mysql
+variables:
+  env:
+    APP_ENV: production
+    APP_DEBUG: false
+cron:
+  - spec: '*/15 * * * *'
+    cmd: php artisan schedule:run
+disk: 1024
