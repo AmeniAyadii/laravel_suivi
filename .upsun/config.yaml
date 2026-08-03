@@ -46,7 +46,7 @@ applications:
 services:
   database:
     type: mysql:8.0
-    disk: 2048
+    
 
 routes:
   "https://{default}/":
