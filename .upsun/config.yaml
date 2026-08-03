@@ -1,7 +1,7 @@
-# Configuration pour Platform.sh/Upsun
+# Configuration minimaliste pour Platform.sh
 applications:
   meditrack-laravel:
-    type: php:8.4
+    type: php:8.2
     build:
       flavor: composer
     web:
@@ -12,19 +12,4 @@ applications:
     hooks:
       build: |
         composer install --no-dev --optimize-autoloader
-      deploy: |
-        php artisan migrate --force
-    relationships:
-      database: "db:mysql"
-
-services:
-  db:
-    type: mysql:8.0
-
-routes:
-  "https://{default}/":
-    type: upstream
-    upstream: "meditrack-laravel:http"
-  "http://{default}/":
-    type: redirect
-    to: "https://{default}/"
+    disk: 2048
