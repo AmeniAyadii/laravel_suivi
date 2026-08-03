@@ -1,4 +1,5 @@
 services:
   db:
     type: mysql:8.0
-    disk: 1024
+    configuration:
+      disk: 1024

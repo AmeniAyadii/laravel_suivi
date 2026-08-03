@@ -6,8 +6,8 @@ applications:
     web:
       locations:
         "/":
-          root: public
-          passthru: /index.php
+          root: "public"
+          passthru: "/index.php"
           expires: 1h
           allow: true
     hooks:
@@ -19,12 +19,12 @@ applications:
       deploy: |
         php artisan migrate --force
     relationships:
-      database: db:mysql
+      database: "db:mysql"
     variables:
       env:
         APP_ENV: production
         APP_DEBUG: false
-    cron:
+    crons:
       - spec: '*/15 * * * *'
-        cmd: php artisan schedule:run
-    disk: 1024
+        cmd: 'php artisan schedule:run'
+    disk: 2048
