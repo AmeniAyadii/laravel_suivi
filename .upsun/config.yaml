@@ -1,0 +1,30 @@
+applications:
+  app:
+    type: php:8.4
+    runtime:
+      extensions:
+        - sodium
+        - pdo_mysql
+        - mbstring
+        - xml
+        - zip
+        - curl
+        - gd
+        - exif
+        - pcntl
+        - bcmath
+    build:
+      flavor: composer
+    web:
+      locations:
+        "/":
+          root: "public"
+          passthru: "/index.php"
+    hooks:
+      build: |
+        composer install --no-dev --optimize-autoloader
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: "app:http"
