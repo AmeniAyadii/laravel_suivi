@@ -10,4 +10,3 @@ web:
 hooks:
   build: |
     composer install --no-dev --optimize-autoloader
-disk: 2048
