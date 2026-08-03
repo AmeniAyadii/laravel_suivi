@@ -1,0 +1,15 @@
+name: meditrack-laravel
+type: php:8.4
+build:
+  flavor: composer
+web:
+  locations:
+    "/":
+      root: "public"
+      passthru: "/index.php"
+hooks:
+  build: |
+    composer install --no-dev --optimize-autoloader
+  deploy: |
+    php artisan migrate --force
+disk: 2048

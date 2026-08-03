@@ -1,0 +1,21 @@
+# .platform/routes.yaml
+
+"https://{default}/":
+    type: upstream
+    upstream: "meditrack-laravel:http"
+    cache:
+        enabled: true
+        headers:
+            - "Accept"
+            - "Accept-Language"
+            - "Accept-Encoding"
+            - "Cookie"
+            - "Host"
+        cookies:
+            - "PHPSESSID"
+            - "XSRF-TOKEN"
+            - "laravel_session"
+
+"http://{default}/":
+    type: redirect
+    to: "https://{default}/"
