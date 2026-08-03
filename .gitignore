@@ -18,3 +18,7 @@ yarn-error.log
 .vscode/
 *.sqlite
 *.sqlite3
+# Ajouter au .gitignore
+/.platform/routes.yaml
+/.platform/services.yaml
+/.platform.app.yaml
