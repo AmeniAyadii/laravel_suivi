@@ -1,4 +1,4 @@
-# Configuration unique pour Platform.sh/Upsun
+# Configuration pour Platform.sh/Upsun
 applications:
   meditrack-laravel:
     type: php:8.4
@@ -16,12 +16,10 @@ applications:
         php artisan migrate --force
     relationships:
       database: "db:mysql"
-    disk: 2048
 
 services:
   db:
     type: mysql:8.0
-    disk: 1024
 
 routes:
   "https://{default}/":
