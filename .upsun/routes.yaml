@@ -1,7 +1,0 @@
-routes:
-  "https://{default}/":
-    type: upstream
-    upstream: meditrack-laravel:http
-  "https://www.{default}/":
-    type: redirect
-    to: "https://{default}/"

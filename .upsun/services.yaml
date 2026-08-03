@@ -1,5 +1,0 @@
-services:
-  db:
-    type: mysql:8.0
-    configuration:
-      disk: 1024
