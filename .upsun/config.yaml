@@ -28,7 +28,7 @@ applications:
         APP_NAME: "Laravel"
         APP_ENV: "production"
         APP_DEBUG: "false"
-        APP_KEY: "base64:xANRF9dudDPe9vYzsH+b/xuNrXEg23D8FVAxAbzGdoQ="
+        APP_KEY: "base64:xMovDE+y5MQC53xmC0DfsQWLTaF+qxWR7W1dwU0rZH8="
         APP_URL: "https://{default}"
         DB_CONNECTION: "mysql"
         DB_HOST: "database.internal"
@@ -55,10 +55,6 @@ applications:
         JWT_SECRET: "8f4e2d1a9c6b7e3f8a4c2d9e5f1b7d3a9c6e4f8b2d7a1c9e5f3b8d6a2c4e7f9b1d3a5c8e2f6b9d4a7c3e8f5b2d9a6c4e7f1b8d5a3c9e6f2b7d4a8c5e1f9b3d6a7c2e8f4b9d5a1c7e3f8b6d2a9c4e7f5b1d8a6c3e9f7b4d2a5c8e1f6b3d9a7c4e2f8b5d1a6c3e9f4b7d2a8c5e3f9b6d4a1c7e5f2b8d6a4c9e"
         JWT_TTL: "43200"
         JWT_REFRESH_TTL: "20160"
-
-services:
-  database:
-    type: mysql:8.0
 
 routes:
   "https://{default}/":
