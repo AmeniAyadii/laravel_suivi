@@ -29,7 +29,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Générer la clé
-#RUN php artisan key:generate
+
 RUN php artisan key:generate --force || true
 
 # Dump autoload
