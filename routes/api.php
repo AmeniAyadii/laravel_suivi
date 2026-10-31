@@ -35,6 +35,19 @@ use App\Http\Controllers\Api\AlerteController;
 
 use App\Http\Controllers\Api\TensionController;
 
+use App\Http\Controllers\TriageController;
+
+use App\Http\Controllers\Doctor\DoctorController;
+use App\Http\Controllers\Admin\AdminController;
+
+use App\Http\Controllers\Admin\AdminSettingsController;
+
+use App\Http\Controllers\Api\DoctorListController;
+
+use App\Http\Controllers\Doctor\NotificationDoctorController;
+
+use App\Http\Controllers\Api\PrescriptionController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -64,6 +77,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
+    Route::put('/profile/credentials', [AuthController::class, 'updateCredentials']);
+
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
@@ -91,6 +106,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/symptomes/last', [SymptomeController::class, 'last']);
     Route::post('/symptomes', [SymptomeController::class, 'store']);
     Route::delete('/symptomes/{id}', [SymptomeController::class, 'destroy']);
+    
     Route::put('/symptomes/{id}', [SymptomeController::class, 'update']);  // ✅ AJOUTER CETTE LIGNE
     Route::patch('/symptomes/{id}', [SymptomeController::class, 'update']); // ✅ AJOUTER CETTE LIGNE
     
@@ -108,7 +124,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rapports
     Route::post('/reports/generate', [ReportController::class, 'generate']);
     Route::get('/reports', [ReportController::class, 'index']);
+    Route::post('/reports', [ReportController::class, 'store']); // ✅ AJOUTER CETTE LIGNE
     Route::get('/reports/{id}', [ReportController::class, 'show']);
+    Route::put('/reports/{id}', [ReportController::class, 'update']);
     Route::delete('/reports/{id}', [ReportController::class, 'destroy']);
 
     // Bilan de santé
@@ -142,13 +160,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('emergency-alerts', [EmergencyAlertController::class, 'index']);
     Route::get('emergency-alerts/{id}', [EmergencyAlertController::class, 'show']);
     
-    // ============================================
+     
     // 6. NOTIFICATIONS (NOUVEAU)
     // ============================================
-    Route::get('notifications', [NotificationController::class, 'index']);
-    Route::put('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    // ✅ L'ORDRE CORRECT : Les routes statiques AVANT les routes dynamiques
     Route::put('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::put('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::delete('notifications/{id}', [NotificationController::class, 'destroy']);
+    Route::get('notifications', [NotificationController::class, 'index']);
 
     // ✅ AJOUTER LA ROUTE DE TEST
     Route::post('/notifications/test', [NotificationController::class, 'sendTest']);
@@ -359,6 +378,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Constantes Vitales
     Route::get('/constantes', [ConstantesVitalesController::class, 'index']);
+    // ✅ IMPORTANT : Route spécifique AVANT la route dynamique {type}
+    Route::get('/constantes/historique', [ConstantesVitalesController::class, 'history']);
+    
     Route::get('/constantes/{type}', [ConstantesVitalesController::class, 'show']);
     Route::post('/constantes', [ConstantesVitalesController::class, 'store']);
     Route::put('/constantes/{id}', [ConstantesVitalesController::class, 'update']);
@@ -373,6 +395,8 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Export
     Route::get('/export-constantes', [ConstantesVitalesController::class, 'exportCSV']);
+
+    
     
     // Alertes
     Route::get('/alertes', [AlerteController::class, 'index']);
@@ -398,5 +422,130 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/statistics', [TensionController::class, 'getStatistics']);
     });
 });
+
+// Routes protégées (authentification requise)
+Route::middleware('auth:sanctum')->group(function () {
+    
+    // ✅ FCM Tokens
+    Route::post('/fcm/register', [FCMController::class, 'register']);
+    Route::delete('/fcm/unregister', [FCMController::class, 'unregister']);
+
+    // ✅ ROUTE DE TEST (AJOUTER CETTE LIGNE)
+    Route::post('/fcm/test', [FCMController::class, 'testNotification']);
+    
+    
+    
+});
+
+
+Route::post('/triage/predict', [TriageController::class, 'predict']);
+
+
+
+Route::middleware('role:admin')->prefix('admin')->group(function () {
+    Route::get('/users', [AdminController::class, 'users']);
+    Route::post('/users/{user}/role', [AdminController::class, 'assignRole']);
+    Route::post('/doctors', [AdminController::class, 'createDoctor']);
+    Route::get('/doctors/pending', [AdminController::class, 'pendingDoctors']);
+    Route::post('/doctors/{user}/validate', [AdminController::class, 'validateDoctor']);
+    Route::get('/stats', [AdminController::class, 'stats']);
+    Route::get('/activity', [AdminController::class, 'recentActivity']);   // ⬅️ AJOUTER
+    // ⬇️ NOUVELLES ROUTES RENDEZ-VOUS
+    Route::get('/appointments', [AdminController::class, 'appointments']);
+    Route::get('/appointments/stats', [AdminController::class, 'appointmentsStats']);
+    Route::get('/appointments/{rendezvous}', [AdminController::class, 'appointmentDetail']);
+    Route::patch('/appointments/{rendezvous}/status', [AdminController::class, 'updateAppointmentStatus']);
+    Route::delete('/appointments/{rendezvous}', [AdminController::class, 'deleteAppointment']);
+
+    // ⬇️ NOUVELLES ROUTES MÉDICAMENTS
+    Route::get('/medicaments', [AdminController::class, 'medicaments']);
+    Route::get('/medicaments/stats', [AdminController::class, 'medicamentsStats']);
+    Route::get('/medicaments/{medicament}', [AdminController::class, 'medicamentDetail']);
+    Route::patch('/medicaments/{medicament}/status', [AdminController::class, 'updateMedicamentStatus']);
+    Route::delete('/medicaments/{medicament}', [AdminController::class, 'deleteMedicament']);
+
+    // ⬇️ ROUTES NOTIFICATIONS (avec ta table existante)
+    Route::get('/notifications', [AdminController::class, 'notifications']);
+    Route::get('/notifications/stats', [AdminController::class, 'notificationsStats']);
+    Route::post('/notifications', [AdminController::class, 'sendNotification']);
+    Route::delete('/notifications/{notification}', [AdminController::class, 'deleteNotification']);
+});
+
+
+Route::middleware('role:doctor')->prefix('doctor')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DoctorController::class, 'dashboard']);
+
+    // Patients
+    Route::get('/patients', [DoctorController::class, 'patients']);
+    Route::get('/patients/{patient}', [DoctorController::class, 'patientDetail']);
+
+    // Rendez-vous
+    Route::get('/rendezvous', [DoctorController::class, 'rendezvous']);
+    Route::patch('/rendezvous/{rendezvous}/status', [DoctorController::class, 'updateRendezvousStatus']);
+
+    // Prescriptions
+    Route::get('/prescriptions', [DoctorController::class, 'prescriptions']);
+    Route::post('/prescriptions', [DoctorController::class, 'createPrescription']);
+    Route::patch('/prescriptions/{medicament}/status', [DoctorController::class, 'updateMedicamentStatus']);
+
+    // Profil
+    Route::get('/profile', [DoctorController::class, 'profile']);
+    Route::put('/profile', [DoctorController::class, 'updateProfile']);
+});
+
+Route::middleware('role:admin')->prefix('admin')->group(function () {
+    // ... tes autres routes ...
+
+    // ✅ Paramètres de la plateforme
+    Route::get('/settings', [AdminSettingsController::class, 'index']);
+    Route::put('/settings', [AdminSettingsController::class, 'update']);
+    Route::post('/settings/reset', [AdminSettingsController::class, 'reset']);
+});
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doctors', [DoctorListController::class, 'index']);
+    Route::get('/doctors/{id}/availability', [DoctorListController::class, 'availability']);
+});
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    // ... routes existantes
+
+    // Notifications
+    Route::get('/notifications', [NotificationDoctorController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationDoctorController::class, 'unreadCount']);
+    Route::get('/notifications/{id}', [NotificationDoctorController::class, 'show']);
+    Route::put('/notifications/{id}/read', [NotificationDoctorController::class, 'markAsRead']);
+    Route::put('/notifications/read-all', [NotificationDoctorController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationDoctorController::class, 'destroy']);
+    Route::delete('/notifications', [NotificationDoctorController::class, 'clearRead']);
+});
+
+// routes/api.php
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/prescriptions', [PrescriptionController::class, 'store']);
+    Route::get('/prescriptions/{id}', [PrescriptionController::class, 'show']);
+});
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doctor/historique', [\App\Http\Controllers\Doctor\DoctorController::class, 'getHistorique']);
+    Route::get('/doctor/agenda', [\App\Http\Controllers\Doctor\DoctorController::class, 'getAgenda']);
+    Route::post('/doctor/rendezvous', [\App\Http\Controllers\Doctor\DoctorController::class, 'storeRendezvous']);
+});
+
+
+Route::get('/test-log', function () {
+    Log::error('TEST : Vérification du fichier laravel.log');
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Test de journalisation effectué'
+    ]);
+});
+
+
 
 
